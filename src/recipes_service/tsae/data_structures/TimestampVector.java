@@ -83,7 +83,7 @@ public class TimestampVector implements Serializable{
 	 * @param tsVector (a timestamp vector)
 	 */
 	public void updateMax(TimestampVector tsVector){
-                if (tsVector == null){
+if (tsVector == null){
                         return;
                 }
 
@@ -98,8 +98,7 @@ public class TimestampVector implements Serializable{
                                 timestampVector.put(host, other);
                         }
                 }
-                }
-	}
+        }
 	
 	/**
 	 * 
