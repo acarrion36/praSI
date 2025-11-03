@@ -72,10 +72,37 @@ public class Log implements Serializable{
 	 * @return true if op is inserted, false otherwise.
 	 */
 	public boolean add(Operation op){
-		// ....
-		
-		// return generated automatically. Remove it when implementing your solution 
-		return false;
+		if (op == null || op.getTimestamp() == null) {
+								return false;
+						}
+
+						String hostId = op.getTimestamp().getHostid();
+						if (hostId == null) {
+								return false;
+						}
+
+						List<Operation> operations = log.get(hostId);
+						if (operations == null) {
+								List<Operation> newList = new Vector<Operation>();
+								List<Operation> existing = log.putIfAbsent(hostId, newList);
+								operations = existing == null ? newList : existing;
+						}
+
+						synchronized (operations) {
+								int size = operations.size();
+								if (size > 0) {
+										Operation lastOp = operations.get(size - 1);
+										if (lastOp == null || lastOp.getTimestamp() == null) {
+												return false;
+										}
+										long diff = op.getTimestamp().compare(lastOp.getTimestamp());
+										if (diff != 1) {
+												return false;
+										}
+								}
+								operations.add(op);
+								return true;
+						}
 	}
 	
 	/**
@@ -87,9 +114,52 @@ public class Log implements Serializable{
 	 * @return list of operations
 	 */
 	public List<Operation> listNewer(TimestampVector sum){
+            public List<Operation> listNewer(TimestampVector sum){
+                List<Operation> newerOperations = new Vector<Operation>();
+				           Vector<String> hosts = new Vector<String>();
+                for (Enumeration<String> en = log.keys(); en.hasMoreElements();){
+                        hosts.add(en.nextElement());
+                }
 
-		// return generated automatically. Remove it when implementing your solution 
-		return null;
+                for (int i = 0; i < hosts.size(); i++){
+                        int minIndex = i;
+                        for (int j = i + 1; j < hosts.size(); j++){
+                                if (hosts.get(j).compareTo(hosts.get(minIndex)) < 0){
+                                        minIndex = j;
+                                }
+                        }
+                        if (minIndex != i){
+                                String tmp = hosts.get(i);
+                                hosts.set(i, hosts.get(minIndex));
+                                hosts.set(minIndex, tmp);
+                        }
+                }
+
+                for (Iterator<String> it = hosts.iterator(); it.hasNext();){
+                        String host = it.next();
+                        List<Operation> operations = log.get(host);
+                        if (operations == null){
+                                continue;
+                        }
+
+                        Timestamp lastTimestamp = null;
+                        if (sum != null){
+                                lastTimestamp = sum.getLast(host);
+                        }
+
+                        synchronized (operations) {
+                                for (Iterator<Operation> opIt = operations.iterator(); opIt.hasNext();){
+                                        Operation operation = opIt.next();
+                                        if (operation == null || operation.getTimestamp() == null){
+                                                continue;
+                                        }
+                                        if (lastTimestamp == null || operation.getTimestamp().compare(lastTimestamp) > 0){
+                                                newerOperations.add(operation);
+                                        }
+                                }
+                        }
+                }
+                return newerOperations;
 	}
 	
 	/**
@@ -108,7 +178,14 @@ public class Log implements Serializable{
 	@Override
 	public boolean equals(Object obj) {
 		
-		// return generated automatically. Remove it when implementing your solution 
+		                if (this == obj)
+                        return true;
+                if (obj == null)
+                        return false;
+                if (getClass() != obj.getClass())
+                        return false;
+                Log other = (Log) obj;
+                return log.equals(other.log);
 		return false;
 	}
 

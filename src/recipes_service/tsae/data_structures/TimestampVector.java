@@ -67,7 +67,15 @@ public class TimestampVector implements Serializable{
 	public void updateTimestamp(Timestamp timestamp){
 		LSimLogger.log(Level.TRACE, "Updating the TimestampVectorInserting with the timestamp: "+timestamp);
 
-		// ...
+		                if (timestamp == null || timestamp.getHostid() == null){
+                        return;
+                }
+
+                String hostId = timestamp.getHostid();
+                Timestamp current = timestampVector.get(hostId);
+                if (current == null || timestamp.compare(current) > 0){
+                        timestampVector.put(hostId, timestamp);
+                }
 	}
 	
 	/**
@@ -75,6 +83,21 @@ public class TimestampVector implements Serializable{
 	 * @param tsVector (a timestamp vector)
 	 */
 	public void updateMax(TimestampVector tsVector){
+		                if (tsVector == null){
+                        return;
+                }
+
+                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
+                        String host = it.next();
+                        Timestamp other = tsVector.getLast(host);
+                        if (other == null){
+                                continue;
+                        }
+                        Timestamp current = timestampVector.get(host);
+                        if (current == null || other.compare(current) > 0){
+                                timestampVector.put(host, other);
+                        }
+                }
 	}
 	
 	/**
@@ -86,7 +109,11 @@ public class TimestampVector implements Serializable{
 	public Timestamp getLast(String node){
 		
 		// return generated automatically. Remove it when implementing your solution 
-		return null;
+		        public Timestamp getLast(String node){
+                if (node == null){
+                        return null;
+                }
+                return timestampVector.get(node);
 	}
 	
 	/**
@@ -96,6 +123,21 @@ public class TimestampVector implements Serializable{
 	 *  @param tsVector (timestamp vector)
 	 */
 	public void mergeMin(TimestampVector tsVector){
+		                if (tsVector == null){
+                        return;
+                }
+
+                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
+                        String host = it.next();
+                        Timestamp other = tsVector.getLast(host);
+                        if (other == null){
+                                continue;
+                        }
+                        Timestamp current = timestampVector.get(host);
+                        if (current == null || current.compare(other) > 0){
+                                timestampVector.put(host, other);
+                        }
+                }
 	}
 	
 	/**
@@ -103,8 +145,13 @@ public class TimestampVector implements Serializable{
 	 */
 	public TimestampVector clone(){
 		
-		// return generated automatically. Remove it when implementing your solution 
-		return null;
+		        public TimestampVector clone(){
+                TimestampVector clone = new TimestampVector(new java.util.ArrayList<String>(timestampVector.keySet()));
+                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
+                        String host = it.next();
+                        clone.timestampVector.put(host, timestampVector.get(host));
+                }
+                return clone;
 	}
 	
 	/**
