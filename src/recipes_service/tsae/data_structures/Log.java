@@ -114,7 +114,6 @@ public class Log implements Serializable{
 	 * @return list of operations
 	 */
 	public List<Operation> listNewer(TimestampVector sum){
-            public List<Operation> listNewer(TimestampVector sum){
                 List<Operation> newerOperations = new Vector<Operation>();
 				           Vector<String> hosts = new Vector<String>();
                 for (Enumeration<String> en = log.keys(); en.hasMoreElements();){

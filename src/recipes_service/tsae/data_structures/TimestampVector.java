@@ -107,9 +107,7 @@ public class TimestampVector implements Serializable{
 	 * received.
 	 */
 	public Timestamp getLast(String node){
-		
 		// return generated automatically. Remove it when implementing your solution 
-		        public Timestamp getLast(String node){
                 if (node == null){
                         return null;
                 }
@@ -144,8 +142,6 @@ public class TimestampVector implements Serializable{
 	 * clone
 	 */
 	public TimestampVector clone(){
-		
-		        public TimestampVector clone(){
                 TimestampVector clone = new TimestampVector(new java.util.ArrayList<String>(timestampVector.keySet()));
                 for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
                         String host = it.next();
