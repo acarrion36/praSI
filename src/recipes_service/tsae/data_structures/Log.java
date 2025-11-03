@@ -72,6 +72,7 @@ public class Log implements Serializable{
 	 * @return true if op is inserted, false otherwise.
 	 */
 	public boolean add(Operation op){
+	// Validamos los datos esenciales de la operación antes de modificar el registro compartido.
 		if (op == null || op.getTimestamp() == null) {
 								return false;
 						}
@@ -83,12 +84,14 @@ public class Log implements Serializable{
 
 						List<Operation> operations = log.get(hostId);
 						if (operations == null) {
+							 // Creamos la lista del emisor si aún no existe, manteniendo la estructura por participante.
 								List<Operation> newList = new Vector<Operation>();
 								List<Operation> existing = log.putIfAbsent(hostId, newList);
 								operations = existing == null ? newList : existing;
 						}
 
 						synchronized (operations) {
+							// Comprobamos la secuencia previa para garantizar orden estricto por emisor.
 								int size = operations.size();
 								if (size > 0) {
 										Operation lastOp = operations.get(size - 1);
@@ -100,6 +103,7 @@ public class Log implements Serializable{
 												return false;
 										}
 								}
+								// Añadimos la operación manteniendo el orden cronológico protegido por la sección crítica.
 								operations.add(op);
 								return true;
 						}
@@ -114,6 +118,8 @@ public class Log implements Serializable{
 	 * @return list of operations
 	 */
 	public List<Operation> listNewer(TimestampVector sum){
+		                // Construimos la lista resultado con las operaciones que todavía no conoce el resumen recibido.
+
                 List<Operation> newerOperations = new Vector<Operation>();
 				           Vector<String> hosts = new Vector<String>();
                 for (Enumeration<String> en = log.keys(); en.hasMoreElements();){
@@ -121,6 +127,7 @@ public class Log implements Serializable{
                 }
 
                 for (int i = 0; i < hosts.size(); i++){
+// Ordenamos determinísticamente los emisores para ofrecer siempre la misma secuencia de difusión.
                         int minIndex = i;
                         for (int j = i + 1; j < hosts.size(); j++){
                                 if (hosts.get(j).compareTo(hosts.get(minIndex)) < 0){
@@ -147,6 +154,7 @@ public class Log implements Serializable{
                         }
 
                         synchronized (operations) {
+                                // Seleccionamos únicamente las operaciones posteriores al timestamp conocido por el interlocutor.
                                 for (Iterator<Operation> opIt = operations.iterator(); opIt.hasNext();){
                                         Operation operation = opIt.next();
                                         if (operation == null || operation.getTimestamp() == null){

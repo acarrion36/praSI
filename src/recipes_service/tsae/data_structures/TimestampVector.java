@@ -65,6 +65,8 @@ public class TimestampVector implements Serializable{
 	 * @param timestamp
 	 */
 	public void updateTimestamp(Timestamp timestamp){
+		                // Registramos el último timestamp observado para cada emisor según llegan las operaciones.
+
 		LSimLogger.log(Level.TRACE, "Updating the TimestampVectorInserting with the timestamp: "+timestamp);
 
                 if (timestamp == null || timestamp.getHostid() == null){
@@ -83,6 +85,7 @@ public class TimestampVector implements Serializable{
 	 * @param tsVector (a timestamp vector)
 	 */
 	public void updateMax(TimestampVector tsVector){
+		
 if (tsVector == null){
                         return;
                 }
