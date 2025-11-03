@@ -185,7 +185,6 @@ public class Log implements Serializable{
                         return false;
                 Log other = (Log) obj;
                 return log.equals(other.log);
-		return false;
 	}
 
 	/**
