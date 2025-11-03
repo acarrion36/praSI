@@ -67,7 +67,7 @@ public class TimestampVector implements Serializable{
 	public void updateTimestamp(Timestamp timestamp){
 		LSimLogger.log(Level.TRACE, "Updating the TimestampVectorInserting with the timestamp: "+timestamp);
 
-		                if (timestamp == null || timestamp.getHostid() == null){
+                if (timestamp == null || timestamp.getHostid() == null){
                         return;
                 }
 
@@ -83,11 +83,11 @@ public class TimestampVector implements Serializable{
 	 * @param tsVector (a timestamp vector)
 	 */
 	public void updateMax(TimestampVector tsVector){
-		                if (tsVector == null){
+                if (tsVector == null){
                         return;
                 }
 
-                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
+                for (Iterator<String> it = tsVector.timestampVector.keySet().iterator(); it.hasNext();){
                         String host = it.next();
                         Timestamp other = tsVector.getLast(host);
                         if (other == null){
@@ -98,6 +98,7 @@ public class TimestampVector implements Serializable{
                                 timestampVector.put(host, other);
                         }
                 }
+                }
 	}
 	
 	/**
@@ -107,7 +108,6 @@ public class TimestampVector implements Serializable{
 	 * received.
 	 */
 	public Timestamp getLast(String node){
-		// return generated automatically. Remove it when implementing your solution 
                 if (node == null){
                         return null;
                 }
@@ -121,11 +121,11 @@ public class TimestampVector implements Serializable{
 	 *  @param tsVector (timestamp vector)
 	 */
 	public void mergeMin(TimestampVector tsVector){
-		                if (tsVector == null){
+                if (tsVector == null){
                         return;
                 }
 
-                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
+                for (Iterator<String> it = tsVector.timestampVector.keySet().iterator(); it.hasNext();){
                         String host = it.next();
                         Timestamp other = tsVector.getLast(host);
                         if (other == null){
@@ -142,9 +142,14 @@ public class TimestampVector implements Serializable{
 	 * clone
 	 */
 	public TimestampVector clone(){
-                TimestampVector clone = new TimestampVector(new java.util.ArrayList<String>(timestampVector.keySet()));
-                for (Iterator<String> it = timestampVector.keySet().iterator(); it.hasNext();){
-                        String host = it.next();
+                java.util.Vector<String> participants = new java.util.Vector<String>();
+                for (Enumeration<String> en = timestampVector.keys(); en.hasMoreElements();){
+                        participants.add(en.nextElement());
+                }
+
+                TimestampVector clone = new TimestampVector(participants);
+                for (Enumeration<String> en = timestampVector.keys(); en.hasMoreElements();){
+                        String host = en.nextElement();
                         clone.timestampVector.put(host, timestampVector.get(host));
                 }
                 return clone;
@@ -154,9 +159,14 @@ public class TimestampVector implements Serializable{
 	 * equals
 	 */
 	public boolean equals(Object obj){
-		
-		// return generated automatically. Remove it when implementing your solution 
-		return false;
+                if (this == obj)
+                        return true;
+                if (obj == null)
+                        return false;
+                if (getClass() != obj.getClass())
+                        return false;
+                TimestampVector other = (TimestampVector) obj;
+                return timestampVector.equals(other.timestampVector);
 	}
 
 	/**
