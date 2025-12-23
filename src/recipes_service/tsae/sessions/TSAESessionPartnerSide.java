@@ -75,8 +75,25 @@ public class TSAESessionPartnerSide extends Thread{
 			LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 			if (msg.type() == MsgType.AE_REQUEST){
 				// ...
-				
-	            // send operations
+				// --- INICIO INSERTAR ---
+					// 1. Averiguamos qué le falta al Originator (usando el mensaje que acabamos de recibir)
+					MessageAErequest receivedReq = (MessageAErequest) msg;
+					List<Operation> opsToSend = serverData.getLog().listNewer(receivedReq.getSummary());
+					
+					// 2. Enviamos las operaciones una por una
+					for(Operation op : opsToSend){
+						MessageOperation opMsg = new MessageOperation(op);
+						opMsg.setSessionNumber(current_session_number);
+						out.writeObject(opMsg);
+						LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] sent operation: "+ op);
+					}
+
+					// 3. TRUCO: Preparamos 'msg' con NUESTRO resumen real.
+					// Así, la línea 'out.writeObject(msg)' que viene justo debajo (y que es intocable)
+					// enviará este resumen correcto en lugar de repetir la petición recibida.
+					msg = new MessageAErequest(serverData.getSummary(), serverData.getAck());
+					msg.setSessionNumber(current_session_number);
+					// --- FIN INSERTAR ---
 					// ...
 					out.writeObject(msg);
 					msg.setSessionNumber(current_session_number);
@@ -95,7 +112,20 @@ public class TSAESessionPartnerSide extends Thread{
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				while (msg.type() == MsgType.OPERATION){
-					// ...
+					// --- INICIO INSERTAR ---
+					MessageOperation msgOp = (MessageOperation) msg;
+					Operation op = msgOp.getOperation();
+					
+					// Añadimos al log y si es nueva actualizamos resumen y recetas
+					if (serverData.getLog().add(op)) {
+						serverData.getSummary().updateTimestamp(op.getTimestamp());
+						
+						if (op.getType() == recipes_service.data.OperationType.ADD) {
+							recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
+							serverData.getRecipes().add(addOp.getRecipe());
+						}
+					}
+					// --- FIN INSERTAR ---
 					msg = (Message) in.readObject();
 					LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				}

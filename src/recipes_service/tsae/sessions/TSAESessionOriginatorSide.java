@@ -110,7 +110,22 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			msg = (Message) in.readObject();
 			LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			while (msg.type() == MsgType.OPERATION){
-				// ...
+				// --- INICIO INSERTAR ---
+				MessageOperation msgOp = (MessageOperation) msg;
+				Operation op = msgOp.getOperation();
+				
+				// Añadimos al log. Si devuelve true, es nueva.
+				if (serverData.getLog().add(op)) {
+					// Actualizamos nuestro vector de tiempos (Summary)
+					serverData.getSummary().updateTimestamp(op.getTimestamp());
+					
+					// Si es una receta nueva (ADD), la hacemos visible en la aplicación
+					if (op.getType() == recipes_service.data.OperationType.ADD) {
+						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
+						serverData.getRecipes().add(addOp.getRecipe());
+					}
+				}
+				// --- FIN INSERTAR ---
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			}
@@ -119,7 +134,20 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			if (msg.type() == MsgType.AE_REQUEST){
 				// ...
 				
-				// send operations
+				// --- INICIO INSERTAR ---
+				MessageAErequest msgReq = (MessageAErequest) msg;
+				// Obtenemos qué le falta al partner. Si msgReq.getSummary() es null (porque él envió null), devolvemos todo.
+				List<Operation> opsToSend = serverData.getLog().listNewer(msgReq.getSummary());
+				
+				for(Operation op : opsToSend){
+					// Reutilizamos la variable 'msg' para enviar cada operación
+					msg = new MessageOperation(op);
+					msg.setSessionNumber(current_session_number);
+					out.writeObject(msg);
+					LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] sent operation: "+ op);
+				}
+				msg = new MessageEndTSAE();
+				// --- FIN INSERTAR ---
 				
 				//...
 					msg.setSessionNumber(current_session_number);
