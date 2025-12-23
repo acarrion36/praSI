@@ -97,8 +97,10 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			ObjectInputStream_DS in = new ObjectInputStream_DS(socket.getInputStream());
 			ObjectOutputStream_DS out = new ObjectOutputStream_DS(socket.getOutputStream());
 
-			TimestampVector localSummary = null;
-			TimestampMatrix localAck = null;
+			// Cambiamos 'null' por los datos reales para enviar nuestro resumen correctamente
+			TimestampVector localSummary = serverData.getSummary();
+			TimestampMatrix localAck = serverData.getAck();
+	
 
 			// Send to partner: local's summary and ack
 			Message	msg = new MessageAErequest(localSummary, localAck);
@@ -110,22 +112,24 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			msg = (Message) in.readObject();
 			LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			while (msg.type() == MsgType.OPERATION){
-				// --- INICIO INSERTAR ---
-				MessageOperation msgOp = (MessageOperation) msg;
-				Operation op = msgOp.getOperation();
 				
-				// Añadimos al log. Si devuelve true, es nueva.
+				// Procesamos la operación recibida
+				MessageOperation msgOp = (MessageOperation) msg;
+				recipes_service.data.Operation op = msgOp.getOperation();
+				
+				// Añadimos al log. Si devuelve true, es que es nueva y debemos procesarla
 				if (serverData.getLog().add(op)) {
 					// Actualizamos nuestro vector de tiempos (Summary)
 					serverData.getSummary().updateTimestamp(op.getTimestamp());
 					
-					// Si es una receta nueva (ADD), la hacemos visible en la aplicación
+					// Si es una receta nueva (ADD), la añadimos a la lista de recetas visibles
 					if (op.getType() == recipes_service.data.OperationType.ADD) {
 						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
 						serverData.getRecipes().add(addOp.getRecipe());
 					}
 				}
-				// --- FIN INSERTAR ---
+				-
+				
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			}
@@ -134,26 +138,19 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			if (msg.type() == MsgType.AE_REQUEST){
 				// ...
 				
-				// --- INICIO INSERTAR ---
+				// El partner nos ha enviado su resumen, calculamos qué le falta
 				MessageAErequest msgReq = (MessageAErequest) msg;
-				// Obtenemos qué le falta al partner. Si msgReq.getSummary() es null (porque él envió null), devolvemos todo.
-				List<Operation> opsToSend = serverData.getLog().listNewer(msgReq.getSummary());
+				// Obtenemos la lista de operaciones que nosotros tenemos y él no
+				List<recipes_service.data.Operation> opsToSend = serverData.getLog().listNewer(msgReq.getSummary());
 				
-				for(Operation op : opsToSend){
-					// Reutilizamos la variable 'msg' para enviar cada operación
-					msg = new MessageOperation(op);
-					msg.setSessionNumber(current_session_number);
-					out.writeObject(msg);
+				for(recipes_service.data.Operation op : opsToSend){
+					// Enviamos cada operación
+					MessageOperation opMsg = new MessageOperation(op);
+					opMsg.setSessionNumber(current_session_number);
+					out.writeObject(opMsg);
 					LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] sent operation: "+ op);
 				}
-				msg = new MessageEndTSAE();
-				// --- FIN INSERTAR ---
 				
-				//...
-					msg.setSessionNumber(current_session_number);
-					out.writeObject(msg);
-					LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] sent message: "+msg);
-
 				// send and "end of TSAE session" message
 				msg = new MessageEndTSAE();  
 				msg.setSessionNumber(current_session_number);
@@ -180,4 +177,3 @@ public class TSAESessionOriginatorSide extends TimerTask{
 		
 		LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] End TSAE session");
 	}
-}
