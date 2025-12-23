@@ -58,7 +58,7 @@ public class TSAESessionPartnerSide extends Thread{
 		this.serverData = serverData;
 	}
 
-	public void run() {
+public void run() {
 
 		Message msg = null;
 
@@ -74,14 +74,11 @@ public class TSAESessionPartnerSide extends Thread{
 			LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] TSAE session");
 			LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 			if (msg.type() == MsgType.AE_REQUEST){
-				// ...
-				
-				
-				// 1. Averiguamos qué le falta al Originator comparando con su resumen
+				// [MODIFICADO] Calcular operaciones para enviar al originator
 				MessageAErequest receivedReq = (MessageAErequest) msg;
 				List<recipes_service.data.Operation> opsToSend = serverData.getLog().listNewer(receivedReq.getSummary());
 				
-				// 2. Le enviamos todo lo que le falta
+	            // send operations
 				for(recipes_service.data.Operation op : opsToSend){
 					MessageOperation opMsg = new MessageOperation(op);
 					opMsg.setSessionNumber(current_session_number);
@@ -89,38 +86,26 @@ public class TSAESessionPartnerSide extends Thread{
 					LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] sent operation: "+ op);
 				}
 
-				// 3. Preparamos el mensaje con NUESTRO resumen real para enviarlo ahora
-				// Usamos la variable 'msg' para aprovechar el out.writeObject(msg) que viene justo después
-				msg = new MessageAErequest(serverData.getSummary(), serverData.getAck());
-				msg.setSessionNumber(current_session_number);
-				
-				
-				// send operations
-				out.writeObject(msg);
-				// LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] sent message: "+ msg);
 
 				// send to originator: local's summary and ack
-				// --- Esto sobraba porque ya enviamos el resumen arriba ---
-				/* TimestampVector localSummary = null;
-				TimestampMatrix localAck = null;
+				// [MODIFICADO] Usar los datos reales del servidor
+				TimestampVector localSummary = serverData.getSummary();
+				TimestampMatrix localAck = serverData.getAck();
 				msg = new MessageAErequest(localSummary, localAck);
 				msg.setSessionNumber(current_session_number);
 	 	        out.writeObject(msg);
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] sent message: "+ msg);
-				*/
-			
 
 	            // receive operations
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				while (msg.type() == MsgType.OPERATION){
-					// Procesamos las operaciones que nos envía el Originator (igual que hicimos en el otro archivo)
+					// [MODIFICADO] Procesar operaciones recibidas del Originator
 					MessageOperation msgOp = (MessageOperation) msg;
 					recipes_service.data.Operation op = msgOp.getOperation();
 					
 					if (serverData.getLog().add(op)) {
 						serverData.getSummary().updateTimestamp(op.getTimestamp());
-						
 						if (op.getType() == recipes_service.data.OperationType.ADD) {
 							recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
 							serverData.getRecipes().add(addOp.getRecipe());
@@ -143,7 +128,6 @@ public class TSAESessionPartnerSide extends Thread{
 			}
 			socket.close();		
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			LSimLogger.log(Level.FATAL, "[TSAESessionPartnerSide] [session: "+current_session_number+"]" + e.getMessage());
 			e.printStackTrace();
             System.exit(1);
@@ -152,3 +136,4 @@ public class TSAESessionPartnerSide extends Thread{
 		
 		LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] End TSAE session");
 	}
+}
