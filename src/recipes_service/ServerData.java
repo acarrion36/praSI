@@ -153,7 +153,27 @@ public class ServerData {
 	}
 	
 	public synchronized void removeRecipe(String recipeTitle){
-		System.err.println("Error: removeRecipe method (recipesService.serverData) not yet implemented");
+		// [FASE 4] Implementación del borrado
+		// 1. Buscamos si tenemos la receta
+		if (!recipes.contains(recipeTitle)) {
+			System.out.println("Recipe not found: " + recipeTitle);
+			return;
+		}
+		
+		// 2. Generamos un nuevo timestamp para la operación de borrado
+		Timestamp timestamp = nextTimestamp();
+		
+		// 3. Creamos la operación de borrado (RemoveOperation)
+		
+		Recipe r = recipes.get(recipeTitle);
+		Operation op = new RemoveOperation(recipeTitle, r.getTimestamp(), timestamp);
+
+		// 4. Añadimos al log, actualizamos resumen y borramos localmente
+		this.log.add(op);
+		this.summary.updateTimestamp(timestamp);
+		this.recipes.remove(recipeTitle);
+		
+		System.out.println("Recipe removed: " + recipeTitle);
 	}
 	
 	private synchronized void purgeTombstones(){

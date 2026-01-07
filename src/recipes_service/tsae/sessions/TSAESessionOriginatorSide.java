@@ -111,18 +111,21 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			msg = (Message) in.readObject();
 			LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			while (msg.type() == MsgType.OPERATION){
-				// Procesar operaciones recibidas
 				MessageOperation msgOp = (MessageOperation) msg;
 				recipes_service.data.Operation op = msgOp.getOperation();
 
 				if (serverData.getLog().add(op)) {
 					serverData.getSummary().updateTimestamp(op.getTimestamp());
+					
+					// [FASE 4] Distinguir entre Añadir y Borrar
 					if (op.getType() == recipes_service.data.OperationType.ADD) {
 						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
 						serverData.getRecipes().add(addOp.getRecipe());
+					} else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
+						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
+						serverData.getRecipes().remove(removeOp.getRecipeTitle());
 					}
-				}
-				
+				}					
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			}

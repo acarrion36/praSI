@@ -104,17 +104,21 @@ public class TSAESessionPartnerSide extends Thread{
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				while (msg.type() == MsgType.OPERATION){
-					// Procesar operaciones recibidas
-					MessageOperation msgOp = (MessageOperation) msg;
-					recipes_service.data.Operation op = msgOp.getOperation();
+				MessageOperation msgOp = (MessageOperation) msg;
+				recipes_service.data.Operation op = msgOp.getOperation();
+
+				if (serverData.getLog().add(op)) {
+					serverData.getSummary().updateTimestamp(op.getTimestamp());
 					
-					if (serverData.getLog().add(op)) {
-						serverData.getSummary().updateTimestamp(op.getTimestamp());
-						if (op.getType() == recipes_service.data.OperationType.ADD) {
-							recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
-							serverData.getRecipes().add(addOp.getRecipe());
-						}
+					// [FASE 4] Distinguir entre Añadir y Borrar
+					if (op.getType() == recipes_service.data.OperationType.ADD) {
+						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
+						serverData.getRecipes().add(addOp.getRecipe());
+					} else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
+						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
+						serverData.getRecipes().remove(removeOp.getRecipeTitle());
 					}
+				}
 					
 					msg = (Message) in.readObject();
 					LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
