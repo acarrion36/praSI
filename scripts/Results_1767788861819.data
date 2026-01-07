@@ -1,0 +1,139 @@
+
+##### 2026/01/07 13:27:41
+----- [Server@127.0.1.1:35002] Result:
+ 
+Node id: Server@127.0.1.1:35002
+Recipes: {avwyncly=[avwyncly, Content--avwyncly, Server@127.0.1.1:35004], axntwmyi=[axntwmyi, Content--axntwmyi, Server@127.0.1.1:35000], brdlqnbe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], dpbitabi=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], fktedccb=[fktedccb, Content--fktedccb, Server@127.0.1.1:35001], fuajcgkc=[fuajcgkc, Content--fuajcgkc, Server@127.0.1.1:35000], gjkytcgm=[gjkytcgm, Content--gjkytcgm, Server@127.0.1.1:35000], gpqoyeha=[gpqoyeha, Content--gpqoyeha, Server@127.0.1.1:35001], iaiboert=[iaiboert, Content--iaiboert, Server@127.0.1.1:35004], jnkojulw=[jnkojulw, Content--jnkojulw, Server@127.0.1.1:35003], lkgkrmnn=[lkgkrmnn, Content--lkgkrmnn, Server@127.0.1.1:35003], nbfjfswe=[nbfjfswe, Content--nbfjfswe, Server@127.0.1.1:35002], nrffvhsa=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], olmkxndf=[olmkxndf, Content--olmkxndf, Server@127.0.1.1:35003], p^upeabv=[p^upeabv, Content--p^upeabv, Server@127.0.1.1:35000], pshgstne=[pshgstne, Content--pshgstne, Server@127.0.1.1:35001], pyibxqua=[pyibxqua, Content--pyibxqua, Server@127.0.1.1:35003], rdlppquq=[rdlppquq, Content--rdlppquq, Server@127.0.1.1:35004], stuttqar=[stuttqar, Content--stuttqar, Server@127.0.1.1:35000], tyqabxnr=[tyqabxnr, Content--tyqabxnr, Server@127.0.1.1:35002], vwmbhvrb=[vwmbhvrb, Content--vwmbhvrb, Server@127.0.1.1:35003], wfagwcfo=[wfagwcfo, Content--wfagwcfo, Server@127.0.1.1:35000], whdxslud=[whdxslud, Content--whdxslud, Server@127.0.1.1:35004], wnjsblri=[wnjsblri, Content--wnjsblri, Server@127.0.1.1:35003], wvorxhir=[wvorxhir, Content--wvorxhir, Server@127.0.1.1:35002], yjtpxkqi=[yjtpxkqi, Content--yjtpxkqi, Server@127.0.1.1:35002]}
+Log: AddOperation [recipe=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], timestamp=Server@127.0.1.1:35004:   4]
+AddOperation [recipe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], timestamp=Server@127.0.1.1:35003:   6]
+AddOperation [recipe=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], timestamp=Server@127.0.1.1:35002:   4]
+
+Summary: Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Ack: Server@127.0.1.1:35004:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35003:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35000:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35002:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35001:   Server@127.0.1.1:35004:   3
+Server@127.0.1.1:35003:   5
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+
+##### 2026/01/07 13:27:42
+----- [Server@127.0.1.1:35004] Result:
+ 
+Node id: Server@127.0.1.1:35004
+Recipes: {avwyncly=[avwyncly, Content--avwyncly, Server@127.0.1.1:35004], axntwmyi=[axntwmyi, Content--axntwmyi, Server@127.0.1.1:35000], brdlqnbe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], dpbitabi=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], fktedccb=[fktedccb, Content--fktedccb, Server@127.0.1.1:35001], fuajcgkc=[fuajcgkc, Content--fuajcgkc, Server@127.0.1.1:35000], gjkytcgm=[gjkytcgm, Content--gjkytcgm, Server@127.0.1.1:35000], gpqoyeha=[gpqoyeha, Content--gpqoyeha, Server@127.0.1.1:35001], iaiboert=[iaiboert, Content--iaiboert, Server@127.0.1.1:35004], jnkojulw=[jnkojulw, Content--jnkojulw, Server@127.0.1.1:35003], lkgkrmnn=[lkgkrmnn, Content--lkgkrmnn, Server@127.0.1.1:35003], nbfjfswe=[nbfjfswe, Content--nbfjfswe, Server@127.0.1.1:35002], nrffvhsa=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], olmkxndf=[olmkxndf, Content--olmkxndf, Server@127.0.1.1:35003], p^upeabv=[p^upeabv, Content--p^upeabv, Server@127.0.1.1:35000], pshgstne=[pshgstne, Content--pshgstne, Server@127.0.1.1:35001], pyibxqua=[pyibxqua, Content--pyibxqua, Server@127.0.1.1:35003], rdlppquq=[rdlppquq, Content--rdlppquq, Server@127.0.1.1:35004], stuttqar=[stuttqar, Content--stuttqar, Server@127.0.1.1:35000], tyqabxnr=[tyqabxnr, Content--tyqabxnr, Server@127.0.1.1:35002], vwmbhvrb=[vwmbhvrb, Content--vwmbhvrb, Server@127.0.1.1:35003], wfagwcfo=[wfagwcfo, Content--wfagwcfo, Server@127.0.1.1:35000], whdxslud=[whdxslud, Content--whdxslud, Server@127.0.1.1:35004], wnjsblri=[wnjsblri, Content--wnjsblri, Server@127.0.1.1:35003], wvorxhir=[wvorxhir, Content--wvorxhir, Server@127.0.1.1:35002], yjtpxkqi=[yjtpxkqi, Content--yjtpxkqi, Server@127.0.1.1:35002]}
+Log: AddOperation [recipe=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], timestamp=Server@127.0.1.1:35004:   4]
+AddOperation [recipe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], timestamp=Server@127.0.1.1:35003:   6]
+AddOperation [recipe=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], timestamp=Server@127.0.1.1:35002:   4]
+
+Summary: Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Ack: Server@127.0.1.1:35004:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35003:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35000:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35002:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35001:   Server@127.0.1.1:35004:   3
+Server@127.0.1.1:35003:   5
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+
+##### 2026/01/07 13:27:42
+----- [Server@127.0.1.1:35003] Result:
+ 
+Node id: Server@127.0.1.1:35003
+Recipes: {avwyncly=[avwyncly, Content--avwyncly, Server@127.0.1.1:35004], axntwmyi=[axntwmyi, Content--axntwmyi, Server@127.0.1.1:35000], brdlqnbe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], dpbitabi=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], fktedccb=[fktedccb, Content--fktedccb, Server@127.0.1.1:35001], fuajcgkc=[fuajcgkc, Content--fuajcgkc, Server@127.0.1.1:35000], gjkytcgm=[gjkytcgm, Content--gjkytcgm, Server@127.0.1.1:35000], gpqoyeha=[gpqoyeha, Content--gpqoyeha, Server@127.0.1.1:35001], iaiboert=[iaiboert, Content--iaiboert, Server@127.0.1.1:35004], jnkojulw=[jnkojulw, Content--jnkojulw, Server@127.0.1.1:35003], lkgkrmnn=[lkgkrmnn, Content--lkgkrmnn, Server@127.0.1.1:35003], nbfjfswe=[nbfjfswe, Content--nbfjfswe, Server@127.0.1.1:35002], nrffvhsa=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], olmkxndf=[olmkxndf, Content--olmkxndf, Server@127.0.1.1:35003], p^upeabv=[p^upeabv, Content--p^upeabv, Server@127.0.1.1:35000], pshgstne=[pshgstne, Content--pshgstne, Server@127.0.1.1:35001], pyibxqua=[pyibxqua, Content--pyibxqua, Server@127.0.1.1:35003], rdlppquq=[rdlppquq, Content--rdlppquq, Server@127.0.1.1:35004], stuttqar=[stuttqar, Content--stuttqar, Server@127.0.1.1:35000], tyqabxnr=[tyqabxnr, Content--tyqabxnr, Server@127.0.1.1:35002], vwmbhvrb=[vwmbhvrb, Content--vwmbhvrb, Server@127.0.1.1:35003], wfagwcfo=[wfagwcfo, Content--wfagwcfo, Server@127.0.1.1:35000], whdxslud=[whdxslud, Content--whdxslud, Server@127.0.1.1:35004], wnjsblri=[wnjsblri, Content--wnjsblri, Server@127.0.1.1:35003], wvorxhir=[wvorxhir, Content--wvorxhir, Server@127.0.1.1:35002], yjtpxkqi=[yjtpxkqi, Content--yjtpxkqi, Server@127.0.1.1:35002]}
+Log: AddOperation [recipe=[dpbitabi, Content--dpbitabi, Server@127.0.1.1:35004], timestamp=Server@127.0.1.1:35004:   4]
+AddOperation [recipe=[brdlqnbe, Content--brdlqnbe, Server@127.0.1.1:35003], timestamp=Server@127.0.1.1:35003:   6]
+AddOperation [recipe=[nrffvhsa, Content--nrffvhsa, Server@127.0.1.1:35002], timestamp=Server@127.0.1.1:35002:   4]
+
+Summary: Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Ack: Server@127.0.1.1:35004:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35003:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35000:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35002:   Server@127.0.1.1:35004:   4
+Server@127.0.1.1:35003:   6
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   4
+Server@127.0.1.1:35001:   2
+
+Server@127.0.1.1:35001:   Server@127.0.1.1:35004:   3
+Server@127.0.1.1:35003:   5
+Server@127.0.1.1:35000:   5
+Server@127.0.1.1:35002:   3
+Server@127.0.1.1:35001:   2
+
+================================================
