@@ -111,7 +111,6 @@ public class TSAESessionPartnerSide extends Thread{
 						serverData.getSummary().updateTimestamp(op.getTimestamp());
 						
 						if (op.getType() == recipes_service.data.OperationType.ADD) {
-							// Check antizombis
 							if (!serverData.isTombstone(op.getTimestamp())) {
 								recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
 								serverData.getRecipes().add(addOp.getRecipe());
@@ -120,10 +119,11 @@ public class TSAESessionPartnerSide extends Thread{
 						else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
 							recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
 							
-							// --- BORRADO SEGURO ---
+							// --- BORRADO SEGURO CORREGIDO ---
 							recipes_service.data.Recipe currentRecipe = serverData.getRecipes().get(removeOp.getRecipeTitle());
 							
-							if (currentRecipe != null && currentRecipe.getTimestamp().equals(removeOp.getRecipeTimestamp())) {
+							// CORRECCION: Usamos .compare() == 0 en vez de .equals()
+							if (currentRecipe != null && currentRecipe.getTimestamp().compare(removeOp.getRecipeTimestamp()) == 0) {
 								serverData.getRecipes().remove(removeOp.getRecipeTitle());
 							}
 							

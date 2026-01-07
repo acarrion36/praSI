@@ -118,7 +118,7 @@ public class TSAESessionOriginatorSide extends TimerTask{
 					serverData.getSummary().updateTimestamp(op.getTimestamp());
 					
 					if (op.getType() == recipes_service.data.OperationType.ADD) {
-						// Si es un ADD, solo lo aplicamos si NO es un zombie (no está en tombstones)
+						// Si es un ADD, solo lo aplicamos si NO es un zombie
 						if (!serverData.isTombstone(op.getTimestamp())) {
 							recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
 							serverData.getRecipes().add(addOp.getRecipe());
@@ -127,17 +127,15 @@ public class TSAESessionOriginatorSide extends TimerTask{
 					else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
 						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
 						
-						// --- BORRADO SEGURO ---
-						// 1. Obtenemos la receta que tenemos guardada actualmente
+						// --- BORRADO SEGURO CORREGIDO ---
 						recipes_service.data.Recipe currentRecipe = serverData.getRecipes().get(removeOp.getRecipeTitle());
 						
-						// 2. Solo borramos si existe Y si su timestamp coincide con el de la orden de borrado.
-						// Esto evita borrar una versión más nueva (re-creada) por error.
-						if (currentRecipe != null && currentRecipe.getTimestamp().equals(removeOp.getRecipeTimestamp())) {
+						// CORRECCION: Usamos .compare() == 0 en vez de .equals()
+						if (currentRecipe != null && currentRecipe.getTimestamp().compare(removeOp.getRecipeTimestamp()) == 0) {
 							serverData.getRecipes().remove(removeOp.getRecipeTitle());
 						}
 						
-						// 3. Siempre guardamos el tombstone
+						// Siempre guardamos el tombstone
 						serverData.addTombstone(removeOp.getRecipeTimestamp());
 					}
 				}

@@ -179,13 +179,19 @@ public class ServerData {
 	}
 
 	public synchronized void addTombstone(Timestamp t) {
-		if (!tombstones.contains(t)) {
+		if (!isTombstone(t)) {
 			tombstones.add(t);
 		}
 	}
 
 	public synchronized boolean isTombstone(Timestamp t) {
-		return tombstones.contains(t);
+		// No usamos tombstones.contains(t) porque Timestamp no implementa equals correctamente
+		for (Timestamp ts : tombstones) {
+			if (ts.compare(t) == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 	private synchronized void purgeTombstones(){
 		if (ack == null){
