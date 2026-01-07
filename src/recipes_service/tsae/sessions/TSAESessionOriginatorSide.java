@@ -117,15 +117,22 @@ public class TSAESessionOriginatorSide extends TimerTask{
 				if (serverData.getLog().add(op)) {
 					serverData.getSummary().updateTimestamp(op.getTimestamp());
 					
-					// [FASE 4] Distinguir entre Añadir y Borrar
 					if (op.getType() == recipes_service.data.OperationType.ADD) {
-						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
-						serverData.getRecipes().add(addOp.getRecipe());
-					} else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
+						// Si es un ADD, solo lo aplicamos si NO es un zombie (no está en tombstones)
+						if (!serverData.isTombstone(op.getTimestamp())) {
+							recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
+							serverData.getRecipes().add(addOp.getRecipe());
+						}
+					} 
+					else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
 						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
+						// Borramos usando el título
 						serverData.getRecipes().remove(removeOp.getRecipeTitle());
+						// IMPORTANTE: Guardamos el timestamp de la receta original en tombstones
+						serverData.addTombstone(removeOp.getRecipeTimestamp());
 					}
-				}					
+				}
+				
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			}

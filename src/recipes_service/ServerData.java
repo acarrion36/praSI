@@ -153,29 +153,40 @@ public class ServerData {
 	}
 	
 	public synchronized void removeRecipe(String recipeTitle){
-		// [FASE 4] Implementación del borrado
-		// 1. Buscamos si tenemos la receta
+		// [FASE 4] Borrado local
+		// 1. Verificamos si existe la receta
 		if (!recipes.contains(recipeTitle)) {
-			System.out.println("Recipe not found: " + recipeTitle);
 			return;
 		}
 		
-		// 2. Generamos un nuevo timestamp para la operación de borrado
-		Timestamp timestamp = nextTimestamp();
-		
-		// 3. Creamos la operación de borrado (RemoveOperation)
-		
+		// 2. Obtenemos la receta para saber su timestamp de CREACIÓN original
 		Recipe r = recipes.get(recipeTitle);
-		Operation op = new RemoveOperation(recipeTitle, r.getTimestamp(), timestamp);
-
-		// 4. Añadimos al log, actualizamos resumen y borramos localmente
-		this.log.add(op);
-		this.summary.updateTimestamp(timestamp);
-		this.recipes.remove(recipeTitle);
+		Timestamp originalRecipeTimestamp = r.getTimestamp();
 		
-		System.out.println("Recipe removed: " + recipeTitle);
+		// 3. Generamos timestamp nuevo para la operación de borrado
+		Timestamp opTimestamp = nextTimestamp();
+		
+		// 4. Creamos RemoveOperation con 3 argumentos
+		Operation op = new RemoveOperation(recipeTitle, originalRecipeTimestamp, opTimestamp);
+
+		if (this.log.add(op)) {
+			this.summary.updateTimestamp(opTimestamp);
+			this.recipes.remove(recipeTitle); // Método ya existente en Recipes.java
+			
+			// 5. Añadimos el timestamp ORIGINAL a la lista de muertos (tombstones)
+			this.addTombstone(originalRecipeTimestamp);
+		}
 	}
-	
+
+	public synchronized void addTombstone(Timestamp t) {
+		if (!tombstones.contains(t)) {
+			tombstones.add(t);
+		}
+	}
+
+	public synchronized boolean isTombstone(Timestamp t) {
+		return tombstones.contains(t);
+	}
 	private synchronized void purgeTombstones(){
 		if (ack == null){
 			return;
@@ -190,7 +201,6 @@ public class ServerData {
 		}
 		tombstones = newTombstones;
 	}
-	
 	// ****************************************************************************
 	// *** operations to get the TSAE data structures. Used to send to evaluation
 	// ****************************************************************************

@@ -104,21 +104,25 @@ public class TSAESessionPartnerSide extends Thread{
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				while (msg.type() == MsgType.OPERATION){
-				MessageOperation msgOp = (MessageOperation) msg;
-				recipes_service.data.Operation op = msgOp.getOperation();
-
-				if (serverData.getLog().add(op)) {
-					serverData.getSummary().updateTimestamp(op.getTimestamp());
+					MessageOperation msgOp = (MessageOperation) msg;
+					recipes_service.data.Operation op = msgOp.getOperation();
 					
-					// [FASE 4] Distinguir entre Añadir y Borrar
-					if (op.getType() == recipes_service.data.OperationType.ADD) {
-						recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
-						serverData.getRecipes().add(addOp.getRecipe());
-					} else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
-						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
-						serverData.getRecipes().remove(removeOp.getRecipeTitle());
+					if (serverData.getLog().add(op)) {
+						serverData.getSummary().updateTimestamp(op.getTimestamp());
+						
+						if (op.getType() == recipes_service.data.OperationType.ADD) {
+							// Check antizombis
+							if (!serverData.isTombstone(op.getTimestamp())) {
+								recipes_service.data.AddOperation addOp = (recipes_service.data.AddOperation) op;
+								serverData.getRecipes().add(addOp.getRecipe());
+							}
+						} 
+						else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
+							recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
+							serverData.getRecipes().remove(removeOp.getRecipeTitle());
+							serverData.addTombstone(removeOp.getRecipeTimestamp());
+						}
 					}
-				}
 					
 					msg = (Message) in.readObject();
 					LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
