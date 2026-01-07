@@ -119,7 +119,14 @@ public class TSAESessionPartnerSide extends Thread{
 						} 
 						else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
 							recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
-							serverData.getRecipes().remove(removeOp.getRecipeTitle());
+							
+							// --- BORRADO SEGURO ---
+							recipes_service.data.Recipe currentRecipe = serverData.getRecipes().get(removeOp.getRecipeTitle());
+							
+							if (currentRecipe != null && currentRecipe.getTimestamp().equals(removeOp.getRecipeTimestamp())) {
+								serverData.getRecipes().remove(removeOp.getRecipeTitle());
+							}
+							
 							serverData.addTombstone(removeOp.getRecipeTimestamp());
 						}
 					}

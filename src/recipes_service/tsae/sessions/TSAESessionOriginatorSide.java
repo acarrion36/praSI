@@ -126,9 +126,18 @@ public class TSAESessionOriginatorSide extends TimerTask{
 					} 
 					else if (op.getType() == recipes_service.data.OperationType.REMOVE) {
 						recipes_service.data.RemoveOperation removeOp = (recipes_service.data.RemoveOperation) op;
-						// Borramos usando el título
-						serverData.getRecipes().remove(removeOp.getRecipeTitle());
-						// IMPORTANTE: Guardamos el timestamp de la receta original en tombstones
+						
+						// --- BORRADO SEGURO ---
+						// 1. Obtenemos la receta que tenemos guardada actualmente
+						recipes_service.data.Recipe currentRecipe = serverData.getRecipes().get(removeOp.getRecipeTitle());
+						
+						// 2. Solo borramos si existe Y si su timestamp coincide con el de la orden de borrado.
+						// Esto evita borrar una versión más nueva (re-creada) por error.
+						if (currentRecipe != null && currentRecipe.getTimestamp().equals(removeOp.getRecipeTimestamp())) {
+							serverData.getRecipes().remove(removeOp.getRecipeTitle());
+						}
+						
+						// 3. Siempre guardamos el tombstone
 						serverData.addTombstone(removeOp.getRecipeTimestamp());
 					}
 				}
