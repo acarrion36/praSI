@@ -51,8 +51,6 @@ public class TimestampMatrix implements Serializable{
 	 * @return the timestamp vector of node in this timestamp matrix
 	 */
 	TimestampVector getTimestampVector(String node){
-		
-		// return generated automatically. Remove it when implementing your solution 
 		return timestampMatrix.get(node);
 	}
 	
@@ -86,35 +84,35 @@ public class TimestampMatrix implements Serializable{
 	}
 	
 	/**
-	 * 
-	 * @return a timestamp vector containing, for each node, 
+	 * * @return a timestamp vector containing, for each node, 
 	 * the timestamp known by all participants
 	 */
 	public TimestampVector minTimestampVector(){
-
 		if (timestampMatrix.isEmpty()) return null;
 
-		// 1. Usamos el vector de uno de los nodos como base para la estructura (clonado)
-		String firstKey = timestampMatrix.keys().nextElement();
-		TimestampVector minVector = timestampMatrix.get(firstKey).clone();
+		// 1. CORRECCION: No usamos clone(). Creamos un vector nuevo "vacío" 
+		// para poder ir subiendo hasta el mínimo real.
+		java.util.Vector<String> participants = new java.util.Vector<String>(timestampMatrix.keySet());
+		TimestampVector minVector = new TimestampVector(participants);
 
-		// 2. Iteramos sobre cada columna (participante)
-		//    Para cada participante, buscamos el valor mínimo a través de todas las filas (vectores de la matriz)
+		// 2. Iteramos sobre cada participante (columnas de la matriz)
 		for (String participant : timestampMatrix.keySet()) {
 			recipes_service.tsae.data_structures.Timestamp minTs = null;
 
-			// Miramos qué sabe cada nodo sobre 'participant'
+			// Buscamos el valor mínimo para 'participant' mirando en todos los vectores (filas)
 			for (TimestampVector v : timestampMatrix.values()) {
 				recipes_service.tsae.data_structures.Timestamp ts = v.getLast(participant);
 				if (ts == null) continue;
 
+				// Si es el primero que miramos o es menor que el que teníamos, lo guardamos como nuevo mínimo
 				if (minTs == null || ts.compare(minTs) < 0) {
 					minTs = ts;
 				}
 			}
 			
-			// Asignamos el mínimo encontrado al vector resultado
+			// 3. CORRECCION: Asignamos el mínimo encontrado al vector resultado (antes estaba vacío)
 			if (minTs != null) {
+				minVector.updateTimestamp(minTs);
 			}
 		}
 		return minVector;
