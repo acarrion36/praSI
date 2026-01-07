@@ -53,7 +53,7 @@ public class TimestampMatrix implements Serializable{
 	TimestampVector getTimestampVector(String node){
 		
 		// return generated automatically. Remove it when implementing your solution 
-		return null;
+		return timestampMatrix.get(node);
 	}
 	
 	/**
@@ -61,6 +61,17 @@ public class TimestampMatrix implements Serializable{
 	 * @param tsMatrix
 	 */
 	public void updateMax(TimestampMatrix tsMatrix){
+		if (tsMatrix == null) return;
+		
+		for (String node : timestampMatrix.keySet()) {
+			TimestampVector localVec = timestampMatrix.get(node);
+			TimestampVector otherVec = tsMatrix.getTimestampVector(node);
+			
+			if (localVec != null && otherVec != null) {
+				// Actualizamos nuestro vector local con el máximo del otro (merge)
+				localVec.updateMax(otherVec);
+			}
+		}
 	}
 	
 	/**
@@ -69,6 +80,9 @@ public class TimestampMatrix implements Serializable{
 	 * @param tsVector
 	 */
 	public void update(String node, TimestampVector tsVector){
+		if (node != null && tsVector != null) {
+			timestampMatrix.put(node, tsVector);
+		}
 	}
 	
 	/**
@@ -78,17 +92,46 @@ public class TimestampMatrix implements Serializable{
 	 */
 	public TimestampVector minTimestampVector(){
 
-		// return generated automatically. Remove it when implementing your solution 
-		return null;
+		if (timestampMatrix.isEmpty()) return null;
+
+		// 1. Usamos el vector de uno de los nodos como base para la estructura (clonado)
+		String firstKey = timestampMatrix.keys().nextElement();
+		TimestampVector minVector = timestampMatrix.get(firstKey).clone();
+
+		// 2. Iteramos sobre cada columna (participante)
+		//    Para cada participante, buscamos el valor mínimo a través de todas las filas (vectores de la matriz)
+		for (String participant : timestampMatrix.keySet()) {
+			recipes_service.tsae.data_structures.Timestamp minTs = null;
+
+			// Miramos qué sabe cada nodo sobre 'participant'
+			for (TimestampVector v : timestampMatrix.values()) {
+				recipes_service.tsae.data_structures.Timestamp ts = v.getLast(participant);
+				if (ts == null) continue;
+
+				if (minTs == null || ts.compare(minTs) < 0) {
+					minTs = ts;
+				}
+			}
+			
+			// Asignamos el mínimo encontrado al vector resultado
+			if (minTs != null) {
+			}
+		}
+		return minVector;
 	}
 	
 	/**
 	 * clone
 	 */
 	public TimestampMatrix clone(){
-
-		// return generated automatically. Remove it when implementing your solution 
-		return null;
+		// No podemos usar el constructor normal porque no tenemos la lista de participantes a mano fácilmente,
+		// así que clonamos el mapa manualmente.
+		TimestampMatrix copy = new TimestampMatrix(new java.util.Vector<String>(timestampMatrix.keySet())); 
+		// Sobreescribimos con los valores clonados reales
+		for (String key : timestampMatrix.keySet()) {
+			copy.update(key, timestampMatrix.get(key).clone());
+		}
+		return copy;
 	}
 	
 	/**
@@ -96,9 +139,10 @@ public class TimestampMatrix implements Serializable{
 	 */
 	@Override
 	public boolean equals(Object obj) {
-
-		// return generated automatically. Remove it when implementing your solution 
-		return false;
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		TimestampMatrix other = (TimestampMatrix) obj;
+		return timestampMatrix.equals(other.timestampMatrix);
 	}
 
 	

@@ -177,6 +177,32 @@ public class Log implements Serializable{
 	 * @param ack: ackSummary.
 	 */
 	public void purgeLog(TimestampMatrix ack){
+		if (ack == null) return;
+		
+		// 1. Calculamos el vector "minimo": representa lo que TODOS han visto con seguridad.
+		TimestampVector minVector = ack.minTimestampVector();
+		if (minVector == null) return;
+		
+		// 2. Iteramos sobre cada lista de operaciones (una por cada nodo emisor)
+		for (String host : log.keySet()) {
+			List<Operation> ops = log.get(host);
+			if (ops == null) continue;
+			
+			// Obtenemos el timestamp límite para este host
+			recipes_service.tsae.data_structures.Timestamp limit = minVector.getLast(host);
+			if (limit == null) continue;
+
+			synchronized (ops) {
+				Iterator<Operation> it = ops.iterator();
+				while (it.hasNext()) {
+					Operation op = it.next();
+					// Si el timestamp de la operación es <= al límite, significa que todos la tienen -> borrar
+					if (op.getTimestamp().compare(limit) <= 0) {
+						it.remove();
+					}
+				}
+			}
+		}
 	}
 
 	/**

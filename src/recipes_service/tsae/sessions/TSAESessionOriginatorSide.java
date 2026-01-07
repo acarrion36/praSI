@@ -81,7 +81,7 @@ public class TSAESessionOriginatorSide extends TimerTask{
 		}
 	}
 	
-/**
+	/**
 	 * This method perform a TSAE session
 	 * with the partner server n
 	 * @param n
@@ -97,7 +97,7 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			ObjectInputStream_DS in = new ObjectInputStream_DS(socket.getInputStream());
 			ObjectOutputStream_DS out = new ObjectOutputStream_DS(socket.getOutputStream());
 
-			// [MODIFICADO] Obtenemos los datos reales en lugar de null para Phase 2
+			// [FASE 3] Enviamos nuestros datos reales (Summary y ACK Matrix)
 			TimestampVector localSummary = serverData.getSummary();
 			TimestampMatrix localAck = serverData.getAck();
 
@@ -111,7 +111,7 @@ public class TSAESessionOriginatorSide extends TimerTask{
 			msg = (Message) in.readObject();
 			LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 			while (msg.type() == MsgType.OPERATION){
-				// [MODIFICADO] Procesar operacion recibida
+				// Procesar operaciones recibidas
 				MessageOperation msgOp = (MessageOperation) msg;
 				recipes_service.data.Operation op = msgOp.getOperation();
 
@@ -129,8 +129,21 @@ public class TSAESessionOriginatorSide extends TimerTask{
 
             // receive partner's summary and ack
 			if (msg.type() == MsgType.AE_REQUEST){
-				// [MODIFICADO] Calcular que operaciones le faltan al partner y enviarlas
 				MessageAErequest msgReq = (MessageAErequest) msg;
+				
+				// [FASE 3] Actualización de la matriz de ACKs y purgado del Log
+				// 1. Incorporamos la información de ACKs que nos trae el partner (merge)
+				serverData.getAck().updateMax(msgReq.getAck());
+				
+				// 2. IMPORTANTE: Actualizamos explícitamente la fila del partner con su resumen actual.
+				// Usamos n.getId() (ej: Server@127.0.0.1:35000) en lugar de n.toString()
+				serverData.getAck().update(n.getId(), msgReq.getSummary()); 
+				
+				// 3. Purgamos el log
+				serverData.getLog().purgeLog(serverData.getAck());
+				
+				
+				// Calcular operaciones para enviar
 				List<recipes_service.data.Operation> opsToSend = serverData.getLog().listNewer(msgReq.getSummary());
 				
 				// send operations
@@ -151,7 +164,7 @@ public class TSAESessionOriginatorSide extends TimerTask{
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionOriginatorSide] [session: "+current_session_number+"] received message: "+msg);
 				if (msg.type() == MsgType.END_TSAE){
-					// Session finished correctly
+					// 
 				}
 
 			}			

@@ -58,7 +58,7 @@ public class TSAESessionPartnerSide extends Thread{
 		this.serverData = serverData;
 	}
 
-public void run() {
+	public void run() {
 
 		Message msg = null;
 
@@ -74,8 +74,13 @@ public void run() {
 			LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] TSAE session");
 			LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 			if (msg.type() == MsgType.AE_REQUEST){
-				// [MODIFICADO] Calcular operaciones para enviar al originator
 				MessageAErequest receivedReq = (MessageAErequest) msg;
+				
+				// [FASE 3] Actualización de matriz de ACKs y purgado
+				serverData.getAck().updateMax(receivedReq.getAck());
+				serverData.getLog().purgeLog(serverData.getAck());
+				
+				// Calcular operaciones para enviar al originator
 				List<recipes_service.data.Operation> opsToSend = serverData.getLog().listNewer(receivedReq.getSummary());
 				
 	            // send operations
@@ -86,9 +91,8 @@ public void run() {
 					LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] sent operation: "+ op);
 				}
 
-
 				// send to originator: local's summary and ack
-				// [MODIFICADO] Usar los datos reales del servidor
+				// [FASE 3] Enviamos nuestros datos reales, incluyendo la matriz de ACK actualizada
 				TimestampVector localSummary = serverData.getSummary();
 				TimestampMatrix localAck = serverData.getAck();
 				msg = new MessageAErequest(localSummary, localAck);
@@ -100,7 +104,7 @@ public void run() {
 				msg = (Message) in.readObject();
 				LSimLogger.log(Level.TRACE, "[TSAESessionPartnerSide] [session: "+current_session_number+"] received message: "+ msg);
 				while (msg.type() == MsgType.OPERATION){
-					// [MODIFICADO] Procesar operaciones recibidas del Originator
+					// Procesar operaciones recibidas
 					MessageOperation msgOp = (MessageOperation) msg;
 					recipes_service.data.Operation op = msgOp.getOperation();
 					
